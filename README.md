@@ -22,8 +22,102 @@
 
 - Go 1.22+
 - Node.js 16+
-- Kubernetes 集群（已安装 Velero）
+- Kubernetes 集群 (>= 1.16.0)
+- **Velero 服务**（必须先部署 Velero）
+  - Velero 版本：1.10.0+
+  - Helm Chart 版本：3.1.0+
 - kubeconfig 文件（单集群或多集群）
+
+### Velero 部署
+
+在使用本 API 服务前，需要在 Kubernetes 集群中部署 Velero。
+
+#### 使用 Helm 部署 Velero
+
+```bash
+# 添加 Velero Helm 仓库
+helm repo add vmware-tanzu https://vmware-tanzu.github.io/helm-charts
+helm repo update
+
+# 部署 Velero (以 AWS S3 为例)
+helm install velero vmware-tanzu/velero \
+  --namespace velero \
+  --create-namespace \
+  --version 3.1.0 \
+  --set configuration.provider=aws \
+  --set configuration.backupStorageLocation.name=default \
+  --set configuration.backupStorageLocation.bucket=velero-backups \
+  --set configuration.backupStorageLocation.config.region=us-east-1 \
+  --set credentials.useSecret=true \
+  --set credentials.secretContents.cloud='[default]
+aws_access_key_id=YOUR_ACCESS_KEY_ID
+aws_secret_access_key=YOUR_SECRET_ACCESS_KEY'
+
+# 验证部署
+kubectl get pods -n velero
+kubectl get backupstoragelocations -n velero
+```
+
+#### Velero 支持的存储提供商
+
+- **AWS S3**
+- **Azure Blob Storage**
+- **Google Cloud Storage**
+- **MinIO**
+- **阿里云 OSS**
+- **腾讯云 COS**
+
+#### 配置示例
+
+**MinIO 存储配置**：
+
+```bash
+helm install velero vmware-tanzu/velero \
+  --namespace velero \
+  --create-namespace \
+  --version 3.1.0 \
+  --set configuration.provider=aws \
+  --set configuration.backupStorageLocation.name=default \
+  --set configuration.backupStorageLocation.bucket=velero \
+  --set configuration.backupStorageLocation.config.region=minio \
+  --set configuration.backupStorageLocation.config.s3ForcePathStyle=true \
+  --set configuration.backupStorageLocation.config.s3Url=http://minio.example.com:9000 \
+  --set credentials.useSecret=true \
+  --set credentials.secretContents.cloud='[default]
+aws_access_key_id=minio
+aws_secret_access_key=minio123'
+```
+
+**阿里云 OSS 配置**：
+
+```bash
+helm install velero vmware-tanzu/velero \
+  --namespace velero \
+  --create-namespace \
+  --version 3.1.0 \
+  --set configuration.provider=aws \
+  --set configuration.backupStorageLocation.bucket=velero-backups \
+  --set configuration.backupStorageLocation.config.region=cn-hangzhou \
+  --set configuration.backupStorageLocation.config.s3Url=https://oss-cn-hangzhou.aliyuncs.com \
+  --set initContainers[0].name=velero-plugin-for-alibabacloud \
+  --set initContainers[0].image=registry.cn-hangzhou.aliyuncs.com/acs/velero-plugin-alibabacloud:v1.5.1 \
+  --set initContainers[0].volumeMounts[0].mountPath=/target \
+  --set initContainers[0].volumeMounts[0].name=plugins
+```
+
+#### 验证 Velero 安装
+
+```bash
+# 检查 Velero 版本
+kubectl exec -n velero deployment/velero -- velero version
+
+# 检查备份存储位置状态
+kubectl get backupstoragelocations -n velero
+
+# 输出应显示 Available 状态
+# NAME      PHASE       LAST VALIDATED   AGE   DEFAULT
+# default   Available   10s              1m    true
+```
 
 ### 1. 启动 API 服务
 
@@ -614,6 +708,21 @@ curl -X POST http://localhost:8080/api/v1/schedules \
 - **Axios**：HTTP 客户端
 - **Vue Router**：路由管理
 - **Vite**：构建工具
+
+## 版本兼容性
+
+| 组件 | 最低版本 | 推荐版本 | 说明 |
+|------|---------|---------|------|
+| Kubernetes | 1.16.0 | 1.24+ | Velero Helm Chart 最低要求 |
+| Velero | 1.10.0 | 1.10.0+ | 基于此版本开发和测试 |
+| Velero Helm Chart | 3.1.0 | 3.1.0+ | 部署 Velero 使用的 Helm Chart 版本 |
+| Go | 1.22 | 1.22+ | 编译 API 服务 |
+| Node.js | 16 | 18+ | 编译前端项目 |
+
+**注意**：
+- 本项目基于 Velero 1.10.0 (Helm Chart 3.1.0) 开发
+- Velero API 版本：`v1.velero.io`
+- 如果使用其他 Velero 版本，请确保 CRD 结构兼容
 
 ## 相关资源
 
