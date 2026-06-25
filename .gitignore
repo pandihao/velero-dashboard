@@ -1,0 +1,86 @@
+# Go
+# Binaries for programs and plugins
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+
+# Test binary, built with `go test -c`
+*.test
+
+# Output of the go coverage tool
+*.out
+
+# Go workspace file
+go.work
+
+# Dependency directories
+vendor/
+
+# Build output
+velero-api-server
+velero-api-server-linux
+velero-api-server-darwin
+velero-api-server-windows
+dist/
+build/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Logs
+*.log
+logs/
+
+# Config files with sensitive data
+.kube/
+*.kubeconfig
+config-*.yaml
+
+# Temporary files
+tmp/
+temp/
+
+# Frontend (Vue)
+web/node_modules/
+web/dist/
+web/.vite/
+web/.cache/
+web/dist-ssr/
+web/*.local
+
+# NPM/Yarn
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# Environment variables
+.env
+.env.local
+.env.*.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# OS
+Thumbs.db
+Desktop.ini
+
+# Editor directories and files
+.idea
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# Static files (if using single-port deployment)
+static/
