@@ -15,6 +15,13 @@
 - 可视化管理界面
 - 支持备份、恢复、定时任务管理
 - 顶部集群选择器，轻松切换目标集群
+<img width="1893" height="781" alt="image" src="https://github.com/user-attachments/assets/61987f7d-b65a-4780-a696-64b2dafddad6" />
+<img width="1896" height="841" alt="image" src="https://github.com/user-attachments/assets/d59e2d48-ddcb-4516-bb73-5b1f2e9e1987" />
+<img width="1887" height="892" alt="image" src="https://github.com/user-attachments/assets/ad9fb9a8-fb5e-4882-818f-33a76d4bd020" />
+
+
+
+
 
 ## 快速开始
 
